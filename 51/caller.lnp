@@ -1,0 +1,6 @@
+"lcd1602.obj",
+"main.obj",
+"serial.obj",
+"timer.obj" 
+TO "caller" 
+RAMSIZE(256) 
