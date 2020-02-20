@@ -5,13 +5,13 @@ import (
 	"log"
 )
 
-func GuiInit() {
+func main() {
 	mw, err := walk.NewMainWindow()
 	if err != nil {
 		log.Fatal(err)
 	}
 	//托盘图标文件
-	icon, err := walk.Resources.Icon("./caller.ico")
+	icon, err := walk.Resources.Icon("3")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,12 +26,12 @@ func GuiInit() {
 	if err := ni.SetToolTip("鼠标在icon上悬浮的信息."); err != nil {
 		log.Fatal(err)
 	}
-	ni.MouseDown().Attach(func(x, yint, button walk.MouseButton) {
+	ni.MouseDown().Attach(func(x, y int, button walk.MouseButton) {
 		if button != walk.LeftButton {
 			return
 		}
-		if err := ni.ShowCustom("Walk 任务栏通知标题", "walk 任务栏通知内容"); err != nil {
-			og.Fatal(err)
+		if err := ni.ShowCustom("Walk 任务栏通知标题", "walk 任务栏通知内容", nil); err != nil {
+			log.Fatal(err)
 		}
 	})
 	exitAction := walk.NewAction()
