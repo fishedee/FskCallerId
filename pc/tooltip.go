@@ -2,57 +2,66 @@ package main
 
 import (
 	"github.com/lxn/walk"
-	"log"
 )
 
-func GuiInit() {
-	mw, err := walk.NewMainWindow()
-	if err != nil {
-		log.Fatal(err)
-	}
-	//托盘图标文件
-	icon, err := walk.Resources.Icon("./caller.ico")
-	if err != nil {
-		log.Fatal(err)
-	}
+type NotifyIcon struct {
+	walk.NotifyIcon
+}
+
+func NewNotifyIcon(mw walk.Form) *NotifyIcon {
+	//创建notifyIcon
 	ni, err := walk.NewNotifyIcon(mw)
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer ni.Dispose()
-	if err := ni.SetIcon(icon); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	//鼠标悬浮显示的信息
-	if err := ni.SetToolTip("鼠标在icon上悬浮的信息."); err != nil {
-		log.Fatal(err)
+	icon, err := walk.Resources.Icon("3")
+	if err != nil {
+		panic(err)
+	}
+	err = ni.SetIcon(icon)
+	if err != nil {
+		panic(err)
 	}
 
-	//左键显示的信息
-	ni.MouseDown().Attach(func(x, yint, button walk.MouseButton) {
-		if button != walk.LeftButton {
-			return
-		}
-		if err := ni.ShowCustom("Walk 任务栏通知标题", "walk 任务栏通知内容"); err != nil {
-			og.Fatal(err)
-		}
-	})
+	if err := ni.SetToolTip("来电提醒系统已经运行中"); err != nil {
+		panic(err)
+	}
 
-	//右键菜单栏显示的信息
+	//右键菜单，退出按钮
 	exitAction := walk.NewAction()
-	if err := exitAction.SetText("右键icon的菜单按钮"); err != nil {
-		log.Fatal(err)
+	if err := exitAction.SetText("退出"); err != nil {
+		panic(err)
 	}
-	exitAction.Triggered().Attach(func() { walk.App().Exit(0) })
+	exitAction.Triggered().Attach(func() {
+		walk.App().Exit(0)
+	})
 	if err := ni.ContextMenu().Actions().Add(exitAction); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	if err := ni.SetVisible(true); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	if err := ni.ShowInfo("Walk NotifyIcon Example", "Click the icon to show again."); err != nil {
-		log.Fatal(err)
+	if err := ni.ShowInfo("英豪彩瓦厂", "来电提醒系统已经启动..."); err != nil {
+		panic(err)
 	}
-	mw.Run()
+
+	return &NotifyIcon{
+		NotifyIcon: *ni,
+	}
+}
+
+func (this *NotifyIcon) Dispose() {
+	this.NotifyIcon.Dispose()
+}
+
+func (this *NotifyIcon) AddAction(name string, handler func()) {
+	action := walk.NewAction()
+	if err := action.SetText(name); err != nil {
+		panic(err)
+	}
+	action.Triggered().Attach(handler)
+	if err := this.NotifyIcon.ContextMenu().Actions().Add(action); err != nil {
+		panic(err)
+	}
 }
