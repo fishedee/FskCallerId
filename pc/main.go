@@ -123,9 +123,6 @@ func init() {
 }
 
 func main() {
-	defer func() {
-		recover()
-	}()
 	defer CatchCrash(func(e Exception) {
 		fmt.Printf("init fail!%v\n", e.Error())
 	})

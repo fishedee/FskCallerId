@@ -21,7 +21,7 @@ func NewNotifyIcon() *NotifyIcon {
 		panic(err)
 	}
 
-	icon, err := walk.Resources.Icon("3")
+	icon, err := walk.IconFrom("./caller.ico", mainWindow.DPI())
 	if err != nil {
 		panic(err)
 	}
@@ -37,11 +37,9 @@ func NewNotifyIcon() *NotifyIcon {
 	if err := ni.SetVisible(true); err != nil {
 		panic(err)
 	}
-	/*
-		if err := ni.ShowInfo("英豪彩瓦厂", "来电提醒系统已经启动..."); err != nil {
-			panic(err)
-		}
-	*/
+	if err := ni.ShowInfo("英豪彩瓦厂", "来电提醒系统已经启动..."); err != nil {
+		panic(err)
+	}
 
 	return &NotifyIcon{
 		NotifyIcon: *ni,

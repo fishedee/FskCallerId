@@ -39,7 +39,7 @@ func NewCallerWindow() *CallerWindow {
 				Layout:   HBox{MarginsZero: true, Spacing: 20},
 				Children: []Widget{
 					ImageView{
-						Image:   5,
+						Image:   "./head.ico",
 						Mode:    ImageViewModeZoom,
 						MaxSize: Size{120, 120},
 					},
@@ -89,7 +89,7 @@ func NewCallerWindow() *CallerWindow {
 	}
 
 	//设置图标
-	icon, err := walk.Resources.Icon("3")
+	icon, err := walk.IconFrom("./caller.ico", window.DPI())
 	if err != nil {
 		panic(err)
 	}
