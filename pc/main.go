@@ -12,6 +12,7 @@ func main() {
 	}
 
 	window := NewCallerWindow()
+	window.SetCaller()
 	window.Show()
 
 	tooltip := NewNotifyIcon(mainWindow)

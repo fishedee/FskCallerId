@@ -13,12 +13,14 @@ var (
 )
 
 type CallerWindow struct {
-	window *walk.MainWindow
+	window    *walk.MainWindow
+	container *walk.Composite
 }
 
 func NewCallerWindow() *CallerWindow {
 
 	var window *walk.MainWindow
+	var container *walk.Composite
 	err := MainWindow{
 		AssignTo:   &window,
 		Background: SolidColorBrush{Color: walk.RGB(255, 255, 255)},
@@ -34,9 +36,21 @@ func NewCallerWindow() *CallerWindow {
 				Layout:        HBox{},
 			},
 			Composite{
-				Background:    SolidColorBrush{Color: walk.RGB(0, 255, 0)},
 				StretchFactor: 12,
-				Layout:        HBox{},
+				Layout:        HBox{MarginsZero: true, Spacing: 20},
+				Children: []Widget{
+					ImageView{
+						Image:   "head.jpg",
+						Margin:  10,
+						Mode:    ImageViewModeShrink,
+						MaxSize: Size{150, 150},
+					},
+					Composite{
+						AssignTo:      &container,
+						StretchFactor: 20,
+						Layout:        HBox{},
+					},
+				},
 			},
 			Composite{
 				MinSize:       Size{0, 14},
@@ -91,12 +105,39 @@ func NewCallerWindow() *CallerWindow {
 	hWnd := window.Handle()
 	win.SetWindowLong(hWnd, win.GWL_STYLE, win.WS_OVERLAPPED|win.WS_CAPTION|win.WS_SYSMENU)
 	return &CallerWindow{
-		window: window,
+		window:    window,
+		container: container,
 	}
 }
 
 func (this *CallerWindow) GetWindow() *walk.MainWindow {
 	return this.window
+}
+
+func (this *CallerWindow) SetCaller() {
+	this.container.Children().Clear()
+	builder := NewBuilder(this.container)
+
+	Composite{
+		Layout: VBox{},
+		Children: []Widget{
+			Label{Text: "123"},
+			Label{Text: "456"},
+			Label{Text: "789"},
+		},
+	}.Create(builder)
+}
+
+func (this *CallerWindow) SetRing() {
+	this.container.Children().Clear()
+	builder := NewBuilder(this.container)
+
+	Composite{
+		Layout: VBox{},
+		Children: []Widget{
+			Label{Text: "ring..."},
+		},
+	}.Create(builder)
 }
 
 func (this *CallerWindow) Show() {
