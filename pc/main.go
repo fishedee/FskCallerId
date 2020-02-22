@@ -1,27 +1,33 @@
 package main
 
 import (
-	"github.com/lxn/walk"
+	"fmt"
+	. "github.com/fishedee/language"
 )
 
 func main() {
-
-	mainWindow, err := walk.NewMainWindow()
-	if err != nil {
-		panic(err)
-	}
-
+	defer func() {
+		recover()
+		for {
+		}
+	}()
+	defer CatchCrash(func(e Exception) {
+		fmt.Println(e)
+	})
 	window := NewCallerWindow()
-	window.SetCaller()
 	window.Show()
 
-	tooltip := NewNotifyIcon(mainWindow)
+	tooltip := NewNotifyIcon()
 
 	defer tooltip.Dispose()
 
-	tooltip.AddAction("显示窗口", func() {
-
+	tooltip.AddAction("显示电话", func() {
+		//window.SetCaller()
 	})
 
-	mainWindow.Run()
+	tooltip.AddAction("显示窗口", func() {
+		window.SetRing()
+	})
+
+	tooltip.Run()
 }

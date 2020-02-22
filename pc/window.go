@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	HEIGHT int32 = 600
-	WIDTH  int32 = 1200
+	HEIGHT int32 = 300
+	WIDTH  int32 = 500
 )
 
 type CallerWindow struct {
@@ -30,32 +30,45 @@ func NewCallerWindow() *CallerWindow {
 		Layout:     VBox{Margins: Margins{14, 14, 14, 14}, Spacing: 20},
 		Children: []Widget{
 			Composite{
-				MinSize:       Size{0, 14},
-				Background:    SolidColorBrush{Color: walk.RGB(105, 105, 105)},
-				StretchFactor: 0,
-				Layout:        HBox{},
+				MinSize:    Size{0, 20},
+				Background: SolidColorBrush{Color: walk.RGB(105, 105, 105)},
+				Layout:     HBox{},
 			},
 			Composite{
-				StretchFactor: 12,
-				Layout:        HBox{MarginsZero: true, Spacing: 20},
+				AssignTo:   &container,
+				Background: SolidColorBrush{Color: walk.RGB(255, 152, 29)},
+				Layout:     HBox{MarginsZero: true, Spacing: 20},
 				Children: []Widget{
 					ImageView{
-						Image:   "head.jpg",
-						Margin:  10,
-						Mode:    ImageViewModeShrink,
-						MaxSize: Size{150, 150},
+						Background: SolidColorBrush{Color: walk.RGB(0, 64, 96)},
+						Image:      "head.jpg",
+						Mode:       ImageViewModeShrink,
+						MaxSize:    Size{120, 120},
 					},
 					Composite{
-						AssignTo:      &container,
-						StretchFactor: 20,
-						Layout:        HBox{},
+						Background: SolidColorBrush{Color: walk.RGB(0, 130, 135)},
+						Alignment:  AlignHNearVNear,
+						Layout:     VBox{MarginsZero: true, SpacingZero: true},
+						Children: []Widget{
+							Composite{
+								Background: SolidColorBrush{Color: walk.RGB(255, 0, 0)},
+								Layout:     HBox{MarginsZero: true, SpacingZero: true},
+								Children: []Widget{
+									TextLabel{Text: "123", Font: Font{PointSize: 16}},
+									VSpacer{},
+									TextLabel{Text: "123", Font: Font{PointSize: 16}},
+								},
+							},
+							TextLabel{Text: "123", Font: Font{PointSize: 16}},
+							VSpacer{Size: 40},
+							TextLabel{Text: "456", Font: Font{PointSize: 16}},
+						},
 					},
 				},
 			},
 			Composite{
-				MinSize:       Size{0, 14},
-				StretchFactor: 0,
-				Layout:        HBox{MarginsZero: true, SpacingZero: true},
+				MinSize: Size{0, 20},
+				Layout:  HBox{MarginsZero: true, SpacingZero: true},
 				Children: []Widget{
 					Composite{
 						Background:    SolidColorBrush{Color: walk.RGB(0, 64, 96)},
@@ -115,27 +128,30 @@ func (this *CallerWindow) GetWindow() *walk.MainWindow {
 }
 
 func (this *CallerWindow) SetCaller() {
-	this.container.Children().Clear()
+	this.container.Children().At(1).Dispose()
 	builder := NewBuilder(this.container)
 
 	Composite{
-		Layout: VBox{},
+		Background:    SolidColorBrush{Color: walk.RGB(0, 130, 135)},
+		Layout:        VBox{},
+		StretchFactor: 20,
 		Children: []Widget{
-			Label{Text: "123"},
-			Label{Text: "456"},
-			Label{Text: "789"},
+			Label{Text: "ring..."},
+			Label{Text: "ring..."},
+			Label{Text: "ring..."},
 		},
 	}.Create(builder)
 }
 
 func (this *CallerWindow) SetRing() {
-	this.container.Children().Clear()
+	this.container.Children().At(1).Dispose()
 	builder := NewBuilder(this.container)
 
 	Composite{
-		Layout: VBox{},
-		Children: []Widget{
-			Label{Text: "ring..."},
+		Layout:        VBox{},
+		StretchFactor: 20,
+		Children:      []Widget{
+			//Label{Text: "ring..."},
 		},
 	}.Create(builder)
 }

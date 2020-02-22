@@ -6,11 +6,17 @@ import (
 
 type NotifyIcon struct {
 	walk.NotifyIcon
+	mainWindow *walk.MainWindow
 }
 
-func NewNotifyIcon(mw walk.Form) *NotifyIcon {
+func NewNotifyIcon() *NotifyIcon {
+	mainWindow, err := walk.NewMainWindow()
+	if err != nil {
+		panic(err)
+	}
+
 	//创建notifyIcon
-	ni, err := walk.NewNotifyIcon(mw)
+	ni, err := walk.NewNotifyIcon(mainWindow)
 	if err != nil {
 		panic(err)
 	}
@@ -50,6 +56,7 @@ func NewNotifyIcon(mw walk.Form) *NotifyIcon {
 
 	return &NotifyIcon{
 		NotifyIcon: *ni,
+		mainWindow: mainWindow,
 	}
 }
 
@@ -66,4 +73,8 @@ func (this *NotifyIcon) AddAction(name string, handler func()) {
 	if err := this.NotifyIcon.ContextMenu().Actions().Add(action); err != nil {
 		panic(err)
 	}
+}
+
+func (this *NotifyIcon) Run() {
+	this.mainWindow.Run()
 }
