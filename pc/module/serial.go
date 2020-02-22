@@ -213,7 +213,7 @@ func (this *Serial) run_test() {
 }
 
 func (this *Serial) Run() error {
-	go this.run()
+	go this.run_test()
 	this.fireListener()
 	return nil
 }

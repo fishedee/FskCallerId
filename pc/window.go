@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	HEIGHT int32 = 280
-	WIDTH  int32 = 400
+	HEIGHT_DPI int = 280
+	WIDTH_DPI  int = 400
 )
 
 type CallerWindow struct {
@@ -26,7 +26,7 @@ func NewCallerWindow() *CallerWindow {
 		Background: SolidColorBrush{Color: walk.RGB(255, 255, 255)},
 		Name:       "",
 		Title:      "来电显示提醒",
-		Size:       Size{int(WIDTH), int(HEIGHT)},
+		Size:       Size{int(WIDTH_DPI), int(HEIGHT_DPI)},
 		Layout:     VBox{Margins: Margins{14, 14, 14, 14}, Spacing: 20},
 		Children: []Widget{
 			Composite{
@@ -151,7 +151,9 @@ func (this *CallerWindow) Show() {
 
 	win.SystemParametersInfo(48, 0, unsafe.Pointer(&rect), 0)
 
-	win.SetWindowPos(hWnd, win.HWND_TOP, rect.Right-WIDTH, rect.Bottom-HEIGHT, WIDTH, HEIGHT, win.SWP_FRAMECHANGED|win.SWP_NOOWNERZORDER)
+	width := int32(this.window.IntFrom96DPI(WIDTH_DPI))
+	height := int32(this.window.IntFrom96DPI(HEIGHT_DPI))
+	win.SetWindowPos(hWnd, win.HWND_TOP, rect.Right-width, rect.Bottom-height, width, height, win.SWP_FRAMECHANGED|win.SWP_NOOWNERZORDER)
 
 	this.window.Show()
 }

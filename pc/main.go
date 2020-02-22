@@ -30,23 +30,28 @@ func NewServer(log Log, serial *Serial, contact *Contact, subscriber *Subscriber
 
 func (this *Server) callListener(callTime time.Time, phone string) {
 	//记录通讯记录
-	go func() {
-		err := this.contact.SendCallLog(phone, callTime)
-		if err != nil {
-			this.log.Critical("SendCallLog error %v", err.Error())
-		}
-	}()
+	/*
+		go func() {
+			err := this.contact.SendCallLog(phone, callTime)
+			if err != nil {
+				this.log.Critical("SendCallLog error %v", err.Error())
+			}
+		}()
+	*/
 	//读取电话对应信息
 	contactInfo := this.contact.GetContactByPhone(phone)
-	data := map[string]interface{}{
-		"type":   "call",
-		"time":   callTime,
-		"phone":  phone,
-		"name":   contactInfo.Name,
-		"image":  "",
-		"remark": fmt.Sprintf("[%v]%v", contactInfo.Group, contactInfo.Remark),
-	}
+	/*
+		data := map[string]interface{}{
+			"type":   "call",
+			"time":   callTime,
+			"phone":  phone,
+			"name":   contactInfo.Name,
+			"image":  "",
+			"remark": fmt.Sprintf("[%v]%v", contactInfo.Group, contactInfo.Remark),
+		}
+	*/
 
+	//打开窗口
 	this.tooltip.Synchronize(func() {
 		//先关掉原来的窗口
 		if this.callerWindow != nil {
@@ -58,8 +63,6 @@ func (this *Server) callListener(callTime time.Time, phone string) {
 		this.callerWindow.SetCaller(callTime.Format("15:04"), phone, contactInfo.Name, "["+contactInfo.Group+"]")
 		this.callerWindow.Show()
 	})
-
-	this.log.Debug("call in one!%v", data)
 }
 
 func (this *Server) contactUpdateListener(version string) {

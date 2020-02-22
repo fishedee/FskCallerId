@@ -63,7 +63,7 @@ func (this *Contact) Init() {
 	if err != nil {
 		panic("invalid database format " + err.Error())
 	}
-	this.CheckVersion(this.data.Version.ContactVersionId)
+	this.CheckVersion(-1)
 }
 
 func (this *Contact) GetContactByPhone(phone string) ContactSingleInfo {
@@ -88,9 +88,10 @@ func (this *Contact) CheckVersion(versionId int) {
 
 func (this *Contact) checkVersion(versionId int) {
 	curVersionId := this.data.Version.ContactVersionId
-	if curVersionId >= versionId {
+	if versionId > 0 && curVersionId >= versionId {
 		return
 	}
+
 	//拉取最新的数据
 	var dataByte []byte
 	err := this.ajaxPool.Get(&Ajax{
