@@ -41,7 +41,7 @@ func NewCallerWindow() *CallerWindow {
 				Children: []Widget{
 					ImageView{
 						Background: SolidColorBrush{Color: walk.RGB(0, 64, 96)},
-						Image:      "head.jpg",
+						Image:      5,
 						Mode:       ImageViewModeShrink,
 						MaxSize:    Size{120, 120},
 					},
