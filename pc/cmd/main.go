@@ -79,6 +79,9 @@ func (this *Server) Close() {
 
 func init() {
 	MustRegisterIoc(NewServer)
+	MustRegisterIoc(func() ConfigFile {
+		return "data/conf/config.ini"
+	})
 }
 
 func main() {

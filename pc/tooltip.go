@@ -34,17 +34,6 @@ func NewNotifyIcon() *NotifyIcon {
 		panic(err)
 	}
 
-	//右键菜单，退出按钮
-	exitAction := walk.NewAction()
-	if err := exitAction.SetText("退出"); err != nil {
-		panic(err)
-	}
-	exitAction.Triggered().Attach(func() {
-		walk.App().Exit(0)
-	})
-	if err := ni.ContextMenu().Actions().Add(exitAction); err != nil {
-		panic(err)
-	}
 	if err := ni.SetVisible(true); err != nil {
 		panic(err)
 	}
@@ -77,4 +66,12 @@ func (this *NotifyIcon) AddAction(name string, handler func()) {
 
 func (this *NotifyIcon) Run() {
 	this.mainWindow.Run()
+}
+
+func (this *NotifyIcon) MessageBox(title string, message string) {
+	walk.MsgBox(this.mainWindow, title, message, walk.MsgBoxOK)
+}
+
+func (this *NotifyIcon) Synchronize(handler func()) {
+	this.mainWindow.Synchronize(handler)
 }

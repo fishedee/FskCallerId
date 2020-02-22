@@ -28,8 +28,10 @@ type Contact = module.Contact
 
 type Subscriber = module.Subscriber
 
-func NewConfig() config.Config {
-	config, err := config.NewConfig("ini", "data/conf/config.ini")
+type ConfigFile string
+
+func NewConfig(configFile ConfigFile) config.Config {
+	config, err := config.NewConfig("ini", string(configFile))
 	if err != nil {
 		panic(err)
 	}

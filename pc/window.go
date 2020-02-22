@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	HEIGHT int32 = 300
-	WIDTH  int32 = 500
+	HEIGHT int32 = 280
+	WIDTH  int32 = 400
 )
 
 type CallerWindow struct {
@@ -35,34 +35,18 @@ func NewCallerWindow() *CallerWindow {
 				Layout:     HBox{},
 			},
 			Composite{
-				AssignTo:   &container,
-				Background: SolidColorBrush{Color: walk.RGB(255, 152, 29)},
-				Layout:     HBox{MarginsZero: true, Spacing: 20},
+				AssignTo: &container,
+				Layout:   HBox{MarginsZero: true, Spacing: 20},
 				Children: []Widget{
 					ImageView{
-						Background: SolidColorBrush{Color: walk.RGB(0, 64, 96)},
-						Image:      5,
-						Mode:       ImageViewModeShrink,
-						MaxSize:    Size{120, 120},
+						Image:   5,
+						Mode:    ImageViewModeZoom,
+						MaxSize: Size{120, 120},
 					},
 					Composite{
-						Background: SolidColorBrush{Color: walk.RGB(0, 130, 135)},
-						Alignment:  AlignHNearVNear,
-						Layout:     VBox{MarginsZero: true, SpacingZero: true},
-						Children: []Widget{
-							Composite{
-								Background: SolidColorBrush{Color: walk.RGB(255, 0, 0)},
-								Layout:     HBox{MarginsZero: true, SpacingZero: true},
-								Children: []Widget{
-									TextLabel{Text: "123", Font: Font{PointSize: 16}},
-									VSpacer{},
-									TextLabel{Text: "123", Font: Font{PointSize: 16}},
-								},
-							},
-							TextLabel{Text: "123", Font: Font{PointSize: 16}},
-							VSpacer{Size: 40},
-							TextLabel{Text: "456", Font: Font{PointSize: 16}},
-						},
+						Alignment: AlignHNearVNear,
+						Layout:    VBox{},
+						Children:  []Widget{},
 					},
 				},
 			},
@@ -127,31 +111,35 @@ func (this *CallerWindow) GetWindow() *walk.MainWindow {
 	return this.window
 }
 
-func (this *CallerWindow) SetCaller() {
+func (this *CallerWindow) SetCaller(time string, phone string, name string, group string) {
 	this.container.Children().At(1).Dispose()
 	builder := NewBuilder(this.container)
 
 	Composite{
-		Background:    SolidColorBrush{Color: walk.RGB(0, 130, 135)},
-		Layout:        VBox{},
-		StretchFactor: 20,
+		Alignment: AlignHNearVNear,
+		Layout:    VBox{MarginsZero: true, Spacing: 10},
 		Children: []Widget{
-			Label{Text: "ring..."},
-			Label{Text: "ring..."},
-			Label{Text: "ring..."},
+			Composite{
+				Layout: HBox{MarginsZero: true, SpacingZero: true},
+				Children: []Widget{
+					TextLabel{Text: time, Font: Font{Family: "Segoe UI", PointSize: 16}},
+					Label{Text: phone, Font: Font{Family: "Segoe UI", PointSize: 16}},
+				},
+			},
+			TextLabel{Text: name, Font: Font{Family: "Segoe UI", PointSize: 22}},
+			TextLabel{Text: group, Font: Font{Family: "Segoe UI", PointSize: 16}},
 		},
 	}.Create(builder)
 }
 
-func (this *CallerWindow) SetRing() {
+func (this *CallerWindow) SetRing(text string) {
 	this.container.Children().At(1).Dispose()
 	builder := NewBuilder(this.container)
 
 	Composite{
-		Layout:        VBox{},
-		StretchFactor: 20,
-		Children:      []Widget{
-			//Label{Text: "ring..."},
+		Layout: VBox{MarginsZero: true, SpacingZero: true},
+		Children: []Widget{
+			TextLabel{Text: text, Font: Font{Family: "Segoe UI", PointSize: 22}},
 		},
 	}.Create(builder)
 }
