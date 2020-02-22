@@ -2,6 +2,14 @@
 #include <reg52.h>
 //定时器工具库
 TimeHandlerType globalTimeHandler;
+void delay(unsigned int z){
+	unsigned x,y;
+	for( x = z;x>0;x--){
+		for( y = 110;y>0;y--){
+			;
+		}
+	}
+}
 void TimerInit(){
 	TMOD = ((TMOD&0xf0)|0x01);//定时器0的工作模式
 	TH0=(65536-45872)/256; //设置定时器50ms触发一次，在11.0592d的晶振下

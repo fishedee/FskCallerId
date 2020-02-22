@@ -6,14 +6,27 @@
 
 
 //业务函数
-unsigned char num = 0;
-unsigned char flag = 0;
-char buffer[20];
-void timeTick50ms(){
-	num++;
-	if(num==20){
-		num=0;
-		flag=1;
+sbit key1 = P3^4;
+sbit key2 = P3^5;
+char flag = 0;
+char buffer[64];
+
+void checkKey(){
+	flag = 0;
+	if( key1 == 0 ){
+		delay(10);
+		if( key1 == 0){
+			while(!key1);
+			flag = 1;
+		}
+	}
+
+	if( key2 == 0 ){
+		delay(10);
+		if( key2 == 0){
+			while(!key2);
+			flag = 2;
+		}
 	}
 }
 void main(){
@@ -21,26 +34,23 @@ void main(){
 	int length;
 
 	//模块初始化
-	TimerInit();
 	SerialInit();
-	Lcd1602Init();
+	//Lcd1602Init();
 
 	//启动模块
-   	TimerRun(timeTick50ms);
 	SerialRun();
 
 	//启动业务
-	counter =0;
 	while(1){
+		checkKey();
 		if( flag == 1){
-			flag = 0;
-			counter++;
-			length = sprintf(buffer,"counter: %d",counter);
+			length = sprintf(buffer,"ATRING");
 			SerialSend(buffer,length);
-
-			Lcd1602Write(1,buffer,length);
-			length = sprintf(buffer,"counter2: %d",counter+1);
-			Lcd1602Write(2,buffer,length);
+			//Lcd1602Write(1,buffer,length);
+		}else if( flag == 2){
+			length = sprintf(buffer,"ATF 0208091115018749403");
+			SerialSend(buffer,length);
+			//Lcd1602Write(1,buffer,length);
 		}
 	}
 }

@@ -1,16 +1,10 @@
 #include <reg52.h>
+#include "timer.h"
 //LCD 1602工具库
 sbit lcden = P3^4;//液晶使能端
 sbit lcdrs = P3^5;//液晶数据命令选择端
 sfr lcddata = 0x80;//液晶数据传送端P0
-void delay(unsigned int z){
-	unsigned x,y;
-	for( x = z;x>0;x--){
-		for( y = 110;y>0;y--){
-			;
-		}
-	}
-}
+
 void Lcd1602WriteCom(unsigned char com){
 	lcdrs = 0;
 	lcddata = com;

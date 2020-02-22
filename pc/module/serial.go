@@ -143,14 +143,16 @@ func (this *Serial) singleRun() {
 	for {
 		buf := make([]byte, 128)
 		n, err := port.Read(buf)
+
 		if err != nil {
 			if err != io.EOF {
 				panic(err)
 			} else {
 				break
 			}
-		} else {
+		} else if n != 0 {
 			buf = buf[0:n]
+			this.log.Debug("get serial data %v %v", n, buf)
 			endIndex := -1
 			for i := 0; i != n; i++ {
 				if buf[i] == '\n' {
@@ -213,7 +215,7 @@ func (this *Serial) run_test() {
 }
 
 func (this *Serial) Run() error {
-	go this.run_test()
+	go this.run()
 	this.fireListener()
 	return nil
 }
