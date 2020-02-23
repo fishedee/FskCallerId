@@ -21,7 +21,7 @@ func NewNotifyIcon() *NotifyIcon {
 		panic(err)
 	}
 
-	icon, err := walk.IconFrom("./caller.ico", mainWindow.DPI())
+	icon, err := walk.Resources.Icon("3")
 	if err != nil {
 		panic(err)
 	}

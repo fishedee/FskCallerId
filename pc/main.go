@@ -6,6 +6,7 @@ import (
 	. "github.com/fishedee/app/workgroup"
 	. "github.com/fishedee/language"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -118,7 +119,7 @@ func (this *Server) Close() {
 func init() {
 	MustRegisterIoc(NewServer)
 	MustRegisterIoc(func() ConfigFile {
-		return "config.ini"
+		return "./config.ini"
 	})
 }
 
@@ -127,17 +128,18 @@ func main() {
 		fmt.Printf("init fail!%v\n", e.Error())
 	})
 
+	//切换当前目录
+	currentDir := filepath.Dir(os.Args[0])
+	err := os.Chdir(currentDir)
+	if err != nil {
+		panic(err)
+	}
+
 	MustInvokeIoc(func(log Log, queue Queue, server *Server, serial *Serial, subscriber *Subscriber) {
 		workgroup, err := NewWorkGroup(log, WorkGroupConfig{})
 		if err != nil {
 			panic(err)
 		}
-		defer func() {
-			recover()
-		}()
-		defer CatchCrash(func(e Exception) {
-			fmt.Printf("init fail!%v\n", e.Error())
-		})
 		workgroup.Add(serial)
 		workgroup.Add(subscriber)
 		workgroup.Add(queue)

@@ -57,7 +57,19 @@ func NewContact(log Log, queue Queue, config ContactConfig) (*Contact, error) {
 func (this *Contact) Init() {
 	data, err := ioutil.ReadFile(this.config.File)
 	if err != nil {
-		panic(err)
+		if os.IsNotExist(err) {
+			//文件不存在造成的错误
+			defaultContent := []byte("{}")
+			err := ioutil.WriteFile(this.config.File, defaultContent, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			data = defaultContent
+		} else {
+			//其他错误
+			panic(err)
+		}
+
 	}
 	err = DecodeJson([]byte(data), &this.data)
 	if err != nil {
