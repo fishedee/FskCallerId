@@ -2,3 +2,5 @@ rsrc.syso
 pc.exe
 config.ini
 contact.txt
+access.log
+access.*.log

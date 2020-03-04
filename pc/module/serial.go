@@ -139,7 +139,80 @@ func (this *Serial) singleRun() {
 
 	this.log.Debug("serial connect success!")
 
-	result := []byte{}
+	timeData := []byte{}
+	timeDataIndex := 0
+	phoneData := []byte{}
+	phoneDataIndex := 0
+	beginTime := time.Time{}
+	beginCount := 0
+	state := 0
+	resetState := func() {
+		timeData = []byte{}
+		timeDataIndex = 0
+		phoneData = []byte{}
+		phoneDataIndex = 0
+		beginTime = time.Time{}
+		beginCount = 0
+		state = 0
+	}
+
+	handleChar := func(c byte) (bool, string) {
+		if state == 0 {
+			if c != 0x55 {
+				//重置状态
+				resetState()
+			} else {
+				//叠加状态
+				beginCount++
+				if beginCount > 10 {
+					//足够数量的0x55时，转入状态1
+					state = 1
+					beginTime = time.Now()
+				}
+			}
+		} else if state == 1 {
+			if c == 0x80 {
+				//一直等待一个字符为0x80
+				state = 2
+			}
+		} else if state == 2 {
+			//等到了0x80后，直接越过一个字符，当前字符没有意义
+			state = 3
+		} else if state == 3 {
+			//校验固定的时间日期消息类型
+			timeData = append(timeData, c)
+			timeDataIndex++
+			if timeDataIndex == 10 {
+				//时间长度肯定为10的，开始检验
+				if timeData[0] != 0x01 ||
+					timeData[1] != 0x08 {
+					resetState()
+				} else {
+					state = 4
+				}
+			}
+		} else if state == 4 {
+			//校验不定长的电话数据长度
+			phoneData = append(phoneData, c)
+			phoneDataIndex++
+			if phoneDataIndex == 2 {
+				if phoneData[0] != 0x02 {
+					resetState()
+				}
+			} else if phoneDataIndex > 2 {
+				length := int(phoneData[1])
+				if phoneDataIndex == length+2 {
+					//足够数据了
+					result := "ATF " + string(timeData[2:]) + string(phoneData[2:])
+					resetState()
+					return true, result
+				}
+			}
+		}
+		//默认都是没有数据的
+		return false, ""
+	}
+
 	for {
 		buf := make([]byte, 128)
 		n, err := port.Read(buf)
@@ -152,32 +225,20 @@ func (this *Serial) singleRun() {
 			}
 		} else if n != 0 {
 			buf = buf[0:n]
-			this.log.Debug("get serial data %v %v", n, buf)
-			endIndex := -1
-			for i := 0; i != n; i++ {
-				if buf[i] == '\n' {
-					endIndex = i
-					break
-				}
+			now := time.Now()
+			if state != 0 &&
+				now.Sub(beginTime) > time.Second*5 {
+				//5秒内还没结束的，重置读取数据
+				resetState()
 			}
-			if endIndex != -1 {
-				result = append(result, buf[0:endIndex]...)
-				var data string
-				if len(result) != 0 && result[len(result)-1] == 13 {
-					data = string(result[0 : len(result)-1])
-				} else {
-					data = string(result)
+
+			for i := 0; i != n; i++ {
+				//逐个处理字符
+				hasData, msg := handleChar(buf[i])
+				if hasData {
+					this.log.Debug("get serial data %v %v", len(msg), msg)
+					this.msgChan <- msg
 				}
-				if len(data) != 0 {
-					this.msgChan <- data
-				}
-				if endIndex+1 >= len(buf) {
-					result = []byte{}
-				} else {
-					result = buf[endIndex+1 : len(buf)]
-				}
-			} else {
-				result = append(result, buf...)
 			}
 		}
 	}
