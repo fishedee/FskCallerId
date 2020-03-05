@@ -31,14 +31,13 @@ func NewServer(log Log, serial *Serial, contact *Contact, subscriber *Subscriber
 
 func (this *Server) callListener(callTime time.Time, phone string) {
 	//记录通讯记录
-	/*
-		go func() {
-			err := this.contact.SendCallLog(phone, callTime)
-			if err != nil {
-				this.log.Critical("SendCallLog error %v", err.Error())
-			}
-		}()
-	*/
+	go func() {
+		err := this.contact.SendCallLog(phone, callTime)
+		if err != nil {
+			this.log.Critical("SendCallLog error %v", err.Error())
+		}
+	}()
+
 	//读取电话对应信息
 	contactInfo := this.contact.GetContactByPhone(phone)
 	/*

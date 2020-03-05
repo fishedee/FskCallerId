@@ -139,21 +139,39 @@ func (this *Serial) singleRun() {
 
 	this.log.Debug("serial connect success!")
 
-	timeData := []byte{}
-	timeDataIndex := 0
-	phoneData := []byte{}
-	phoneDataIndex := 0
+	data := []byte{}
+	dataLength := 0
 	beginTime := time.Time{}
 	beginCount := 0
 	state := 0
 	resetState := func() {
-		timeData = []byte{}
-		timeDataIndex = 0
-		phoneData = []byte{}
-		phoneDataIndex = 0
+		data = nil
+		dataLength = 0
 		beginTime = time.Time{}
 		beginCount = 0
 		state = 0
+	}
+
+	handleMessage := func(data []byte) (bool, string) {
+		timeStr := ""
+		dataStr := ""
+		if len(data) >= 10 &&
+			data[0] == 0x01 &&
+			data[1] == 0x08 {
+			//时间数据
+			timeStr = string(data[2:10])
+			data = data[10:]
+		} else {
+			timeStr = time.Now().Format("01021504")
+		}
+		if len(data) >= 3 &&
+			data[0] == 0x02 &&
+			len(data) == int(data[1])+2 {
+			dataStr = string(data[2:])
+		} else {
+			return false, ""
+		}
+		return true, "ATF " + timeStr + dataStr
 	}
 
 	handleChar := func(c byte) (bool, string) {
@@ -176,36 +194,22 @@ func (this *Serial) singleRun() {
 				state = 2
 			}
 		} else if state == 2 {
-			//等到了0x80后，直接越过一个字符，当前字符没有意义
-			state = 3
-		} else if state == 3 {
-			//校验固定的时间日期消息类型
-			timeData = append(timeData, c)
-			timeDataIndex++
-			if timeDataIndex == 10 {
-				//时间长度肯定为10的，开始检验
-				if timeData[0] != 0x01 ||
-					timeData[1] != 0x08 {
-					resetState()
-				} else {
-					state = 4
-				}
+			//0x80之后的数字就是为长度
+			dataLength = int(c)
+			if dataLength <= 0 {
+				resetState()
+			} else {
+				state = 3
 			}
-		} else if state == 4 {
-			//校验不定长的电话数据长度
-			phoneData = append(phoneData, c)
-			phoneDataIndex++
-			if phoneDataIndex == 2 {
-				if phoneData[0] != 0x02 {
-					resetState()
-				}
-			} else if phoneDataIndex > 2 {
-				length := int(phoneData[1])
-				if phoneDataIndex == length+2 {
-					//足够数据了
-					result := "ATF " + string(timeData[2:]) + string(phoneData[2:])
-					resetState()
-					return true, result
+		} else if state == 3 {
+			//获取具体数据
+			data = append(data, c)
+			if len(data) == dataLength {
+				//足够数据了
+				isValid, msg := handleMessage(data)
+				resetState()
+				if isValid {
+					return true, msg
 				}
 			}
 		}

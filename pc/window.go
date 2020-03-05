@@ -153,7 +153,7 @@ func (this *CallerWindow) Show() {
 
 	width := int32(this.window.IntFrom96DPI(WIDTH_DPI))
 	height := int32(this.window.IntFrom96DPI(HEIGHT_DPI))
-	win.SetWindowPos(hWnd, win.HWND_TOP, rect.Right-width, rect.Bottom-height, width, height, win.SWP_FRAMECHANGED|win.SWP_NOOWNERZORDER)
+	win.SetWindowPos(hWnd, win.HWND_TOPMOST, rect.Right-width, rect.Bottom-height, width, height, win.SWP_FRAMECHANGED|win.SWP_NOOWNERZORDER)
 
 	this.window.Show()
 }
