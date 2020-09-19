@@ -60,7 +60,7 @@ func (this *Server) callListener(callTime time.Time, phone string) {
 		}
 		//再创建新窗口
 		this.callerWindow = NewCallerWindow()
-		this.callerWindow.SetCaller(callTime.Format("15:04"), phone, contactInfo.Name, "["+contactInfo.Group+"]")
+		this.callerWindow.SetCaller(callTime.Format("15:04"), phone, contactInfo.Name, "["+contactInfo.Group+"]"+contactInfo.Remark)
 		this.callerWindow.Show()
 	})
 }
