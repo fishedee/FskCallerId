@@ -123,6 +123,7 @@ func init() {
 }
 
 func main() {
+	//FIXME fmt在Windows下打印不出来
 	defer CatchCrash(func(e Exception) {
 		fmt.Printf("init fail!%v\n", e.Error())
 	})
@@ -135,6 +136,10 @@ func main() {
 	}
 
 	MustInvokeIoc(func(log Log, queue Queue, server *Server, serial *Serial, subscriber *Subscriber) {
+		defer CatchCrash(func(e Exception) {
+			log.Critical("%v", e.Error())
+		})
+
 		workgroup, err := NewWorkGroup(log, WorkGroupConfig{})
 		if err != nil {
 			panic(err)
