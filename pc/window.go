@@ -5,11 +5,16 @@ import (
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
 	"unsafe"
+	"image"
+  	_ "image/png"
+  	"os"
 )
 
 var (
 	HEIGHT_DPI int = 280
 	WIDTH_DPI  int = 400
+	headImg image.Image
+	headIcon *walk.Icon
 )
 
 type CallerWindow struct {
@@ -17,10 +22,28 @@ type CallerWindow struct {
 	container *walk.Composite
 }
 
+
+func init(){
+
+	f, err := os.Open("./head.png")
+	if err != nil {
+		panic(err)
+	}
+	headImg , _, err := image.Decode(f)
+	if err != nil {
+		panic(err)
+	}
+	headIcon, err = walk.NewIconFromImage(headImg)
+	if err != nil{
+		panic(err)
+	}
+}
+
 func NewCallerWindow() *CallerWindow {
 
 	var window *walk.MainWindow
 	var container *walk.Composite
+	var img * walk.ImageView
 	err := MainWindow{
 		AssignTo:   &window,
 		Background: SolidColorBrush{Color: walk.RGB(255, 255, 255)},
@@ -39,7 +62,7 @@ func NewCallerWindow() *CallerWindow {
 				Layout:   HBox{MarginsZero: true, Spacing: 20},
 				Children: []Widget{
 					ImageView{
-						Image:   "5",
+						AssignTo:&img,
 						Mode:    ImageViewModeZoom,
 						MaxSize: Size{120, 120},
 					},
@@ -89,6 +112,11 @@ func NewCallerWindow() *CallerWindow {
 	}
 
 	//设置图标
+	err = img.SetImage(headIcon)
+	if err != nil{
+		panic(err)
+	}
+	/*
 	icon, err := walk.Resources.Icon("3")
 	if err != nil {
 		panic(err)
@@ -97,7 +125,7 @@ func NewCallerWindow() *CallerWindow {
 	if err != nil {
 		panic(err)
 	}
-
+	*/
 	//设置窗口样式
 	hWnd := window.Handle()
 	win.SetWindowLong(hWnd, win.GWL_STYLE, win.WS_OVERLAPPED|win.WS_CAPTION|win.WS_SYSMENU)
