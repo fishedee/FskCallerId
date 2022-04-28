@@ -2,26 +2,11 @@ package main
 
 import (
 	"github.com/lxn/walk"
-	"image"
-  	_ "image/png"
-  	"os"
 )
 
 type NotifyIcon struct {
 	walk.NotifyIcon
 	mainWindow *walk.MainWindow
-}
-
-func getImage() image.Image{
-	f, err := os.Open("./caller.png")
-	if err != nil {
-		panic(err)
-	}
-	img, _, err := image.Decode(f)
-	if err != nil {
-		panic(err)
-	}
-	return img;
 }
 
 func NewNotifyIcon() *NotifyIcon {
@@ -36,11 +21,7 @@ func NewNotifyIcon() *NotifyIcon {
 		panic(err)
 	}
 
-	icon, err := walk.NewIconFromImage(getImage())
-	if err != nil {
-		panic(err)
-	}
-	err = ni.SetIcon(icon)
+	err = ni.SetIcon(callerIcon)
 	if err != nil {
 		panic(err)
 	}

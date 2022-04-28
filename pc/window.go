@@ -13,8 +13,8 @@ import (
 var (
 	HEIGHT_DPI int = 280
 	WIDTH_DPI  int = 400
-	headImg image.Image
 	headIcon *walk.Icon
+	callerIcon *walk.Icon
 )
 
 type CallerWindow struct {
@@ -23,8 +23,7 @@ type CallerWindow struct {
 }
 
 
-func init(){
-
+func initHeadIcon(){
 	f, err := os.Open("./head.png")
 	if err != nil {
 		panic(err)
@@ -37,6 +36,26 @@ func init(){
 	if err != nil{
 		panic(err)
 	}
+}
+
+func initCallerIcon(){
+	f, err := os.Open("./caller.png")
+	if err != nil {
+		panic(err)
+	}
+	headImg , _, err := image.Decode(f)
+	if err != nil {
+		panic(err)
+	}
+	callerIcon, err = walk.NewIconFromImage(headImg)
+	if err != nil{
+		panic(err)
+	}
+}
+
+func init(){
+	initHeadIcon()
+	initCallerIcon()
 }
 
 func NewCallerWindow() *CallerWindow {
@@ -116,16 +135,10 @@ func NewCallerWindow() *CallerWindow {
 	if err != nil{
 		panic(err)
 	}
-	/*
-	icon, err := walk.Resources.Icon("3")
+	err = window.SetIcon(callerIcon)
 	if err != nil {
 		panic(err)
 	}
-	err = window.SetIcon(icon)
-	if err != nil {
-		panic(err)
-	}
-	*/
 	//设置窗口样式
 	hWnd := window.Handle()
 	win.SetWindowLong(hWnd, win.GWL_STYLE, win.WS_OVERLAPPED|win.WS_CAPTION|win.WS_SYSMENU)
